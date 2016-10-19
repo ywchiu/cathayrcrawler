@@ -1,17 +1,16 @@
-R 網路爬蟲
+# R 網路爬蟲
 
-課前補充
+## 課前補充
 
-R
+### R
+- https://cran.r-project.org/bin/windows/base/
 
-https://cran.r-project.org/bin/windows/base/
-RStudio
+### RStudio
+- https://www.rstudio.com/products/rstudio/download/
 
-https://www.rstudio.com/products/rstudio/download/
-Markdown 說明
+### Markdown 說明
+- http://markdown.tw/
 
-http://markdown.tw/
-HTML, CSS, Javascript 教學
-
-http://www.w3schools.com/html/
-http://pydoing.blogspot.tw/2012/10/html-css-tutorial.html
+### HTML, CSS, Javascript 教學
+- http://www.w3schools.com/html/
+- http://pydoing.blogspot.tw/2012/10/html-css-tutorial.html

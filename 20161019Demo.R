@@ -78,3 +78,31 @@ page %>% html_nodes('h1') %>% html_text()
 
 ## html_text(html_nodes(page, 'a' ))
 page %>% html_nodes('a') %>% html_text()
+
+
+
+library("rvest")
+# 讀取蘋果網頁
+apple <- read_html('http://www.appledaily.com.tw/realtimenews/section/new/', encoding = 'UTF-8')
+
+# 取得列表 class="rtddt" 下的 a 連結
+rtddt <- apple %>% html_nodes('.rtddt a')
+
+# 查詢列表第一列抓取到的內容
+as.character(rtddt[1])
+
+'<a href=\"/realtimenews/article/international/20161019/970976/Note7用戶集體控告三星　要求損失賠償金\" target=\"_blank\">
+   <time>14:54</time>
+   <h2>國際</h2>
+   <h1><font color=\"#383c40\">Note7用戶集體控告三星　要求損失賠償...(0)</font></h1>
+ </a>'
+
+# 分別取得 time, h2, h1
+dt        <- rtddt %>% html_nodes('time') %>% html_text()
+category  <- rtddt %>% html_nodes('h2')   %>% html_text()
+title     <- rtddt %>% html_nodes('h1')   %>% html_text()
+
+# 將資料合併為 data.frame
+applenews <- data.frame(dt = dt, category = category, title = title)
+View(applenews)
+

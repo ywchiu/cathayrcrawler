@@ -33,3 +33,48 @@ hsr %>% iconv(from='UTF-8', to='UTF-8')
 iconv(hsr, from='UTF-8', to='UTF-8')
 
 
+
+
+sample_html <- '
+<html>
+  <body>
+    <h1 id="title">Hello World</h1>
+    <a href="#"class="link">This is link1</a>
+    <a href="# link2"class="link">This is link2</a>
+  </body>
+</html>
+'
+
+page <- read_html(sample_html)
+
+# Based on tag name
+html_text(html_nodes(page, 'h1'))
+html_text(html_nodes(page, 'a' ))
+
+
+
+# Based on ID => Begins with #
+html_text(html_nodes(page, '#title' ))
+
+# Based on CLASS => Begins with .
+html_text(html_nodes(page, '.link' ))
+
+
+
+# Without Magrittr
+sum(tail(head(iris),3)$Sepal.Length)
+
+# With Magrittr
+iris %>% 
+  head() %>% 
+  tail(3) %>% 
+  .$Sepal.Length %>% 
+  sum()
+
+
+# Based on tag name, revise with Magrittr
+## html_text(html_nodes(page, 'h1'))
+page %>% html_nodes('h1') %>% html_text()
+
+## html_text(html_nodes(page, 'a' ))
+page %>% html_nodes('a') %>% html_text()

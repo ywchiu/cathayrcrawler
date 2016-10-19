@@ -14,3 +14,6 @@
 ### HTML, CSS, Javascript ±Ð¾Ç
 - http://www.w3schools.com/html/
 - http://pydoing.blogspot.tw/2012/10/html-css-tutorial.html
+
+#InfoLite
+- https://chrome.google.com/webstore/detail/infolite/ipjbadabbpedegielkhgpiekdlmfpgal

@@ -116,7 +116,94 @@ link   <-  paste(domain, link, sep = '')
 applenews <- data.frame(dt = dt, category = category, title = title, link = link)
 View(applenews)
 
+# 使用DataFrame 處理、分析資料
+applenews[applenews$category == '娛樂','title']
+
 # 抽出屬性範例
 read_html("<a qoo=123 age=12 href='#'></a>") %>%
      html_nodes('a') %>% 
      html_attr('href')
+
+
+# 取得內文資訊
+appleurl <- 'http://www.appledaily.com.tw/realtimenews/article/entertainment/20161019/970743/【驚嚇片】Note7完換蘋果？！郭書瑤爆「iPhone耳機漏電」'
+detail <- read_html(appleurl) 
+
+# 取得內文
+article <- detail   %>% 
+  html_nodes('.trans') %>%
+  html_text()
+
+# 取得標題
+title <- detail   %>% 
+  html_nodes('#h1') %>%
+  html_text()
+
+# 取得時間
+dt <- detail %>%
+    html_nodes('.gggs time') %>%
+    html_text()
+
+# 取得人氣
+clicked <- detail %>%
+  html_nodes('.clicked') %>%
+  html_text()
+
+
+# 建立函式
+getArticle <- function(url, category){
+  
+  detail <- read_html(url) 
+  
+  # 取得內文
+  article <- detail   %>% 
+    html_nodes('.trans') %>%
+    html_text()
+  
+  # 取得標題
+  title <- detail   %>% 
+    html_nodes('#h1') %>%
+    html_text()
+  
+  # 取得時間
+  dt <- detail %>%
+    html_nodes('.gggs time') %>%
+    html_text()
+  
+  # 取得人氣
+  clicked <- detail %>%
+    html_nodes('.clicked') %>%
+    html_text()
+  
+  data.frame(title = title, article = article, category = category, dt = dt, clicked = clicked, stringsAsFactors = FALSE)
+}
+
+
+# 使用函式存萃取資料
+appleurl <- 'http://www.appledaily.com.tw/realtimenews/article/entertainment/20161019/970743/【驚嚇片】Note7完換蘋果？！郭書瑤爆「iPhone耳機漏電」'
+df <- getArticle(appleurl, '娛樂')
+
+
+
+# 取得頁面函式
+newsurl <- 'http://www.appledaily.com.tw/realtimenews/section/new/'
+domain  <- 'http://www.appledaily.com.tw'
+
+getUrl <- function(newsurl){
+  rtddt <- read_html(newsurl) %>%
+    html_nodes('.rtddt a')
+  
+  dfall <- data.frame()
+  for (ele in rtddt){
+       url       <- ele %>% html_attr('href') 
+       url       <- paste(domain, url , sep='')
+       category  <- ele %>% html_nodes('h2') %>% html_text()   
+       df        <- getArticle(url, category)
+       dfall     <- rbind(dfall, df)
+  }
+  dfall
+}
+
+
+applenews <- getUrl(newsurl)
+View(applenews)

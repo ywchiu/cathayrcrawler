@@ -106,3 +106,17 @@ title     <- rtddt %>% html_nodes('h1')   %>% html_text()
 applenews <- data.frame(dt = dt, category = category, title = title)
 View(applenews)
 
+# 抽出連結
+link   <- rtddt %>% html_attr('href')
+
+domain <- 'http://www.appledaily.com.tw'
+link   <-  paste(domain, link, sep = '')
+
+# 將資料合併為 data.frame
+applenews <- data.frame(dt = dt, category = category, title = title, link = link)
+View(applenews)
+
+# 抽出屬性範例
+read_html("<a qoo=123 age=12 href='#'></a>") %>%
+     html_nodes('a') %>% 
+     html_attr('href')

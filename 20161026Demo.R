@@ -91,6 +91,9 @@ dfs <- do.call('rbind', dfall2)
 
 
 # Apple News Retrieval
+
+library(stringr)
+
 # 建立函式
 getArticle <- function(url, category){
   
@@ -154,6 +157,120 @@ applenews[1,'article'] %>%
   .[[1]] %>%
   .[1] %>%
   trimws()
+
+## Concatenate string 
+paste('hello', 'world')
+?paste
+paste( 'hello', 'world', sep='')
+paste0('hello', 'world')
+
+
+a <- 'aaa@bbb@ccc'
+strsplit(a, '@') %>% 
+  .[[1]] %>% 
+  paste(collapse='-')
+
+
+## remove white space in between
+applenews[1,'article'] %>% 
+  strsplit('googletag') %>%
+  .[[1]] %>%
+  .[1] %>%
+  trimws() %>%
+  strsplit('[\n\r ]+') %>%
+  .[[1]] %>%
+  paste(collapse='')
+
+
+## make clean string as a function
+clearArticle <- function(article){
+  article %>% 
+  strsplit('googletag') %>%
+  .[[1]] %>%
+  .[1] %>%
+  trimws() %>%
+  strsplit('[\n\r ]+') %>%
+  .[[1]] %>%
+  paste(collapse='')
+}
+clearArticle(applenews[1,'article'])
+
+## Regular Expression
+a <- 'Hi, I am xxx, my phone number is 0912-345-678'
+
+a <- 'Hi'
+grep('H', a)
+
+### Match Number
+a <- '8'
+grep('[0123456789]', a)  # 0 or 1 or 2 ... or 9
+grep('[0-9]', a) # [0-9] => [0123456789]
+grep('\\d', a) # \\d => [0-9]
+
+### Match Alphabet
+a <- 'y'
+grep('[abcdefghijklmnopqrstuvwxyz]', a)  # a or b ... z
+grep('[a-z]', a) # [a-z] => [abcde....z]
+
+a <- 'Y'
+grep('[a-zA-Z]', a) # [a-zA-Z] => [abcde....zA...Z]
+
+### Match Alphanet and Numeric
+grep('[a-zA-Z0-9]', a)
+grep('\\w', a) # \\w => [a-zA-Z0-9]
+
+
+a <- '$'
+grep('.', a) # . Match any character
+
+
+### Match multiple characters
+a <- '0912345678'
+grep('\\d{10}', a) # match exact 10 numeric
+
+
+a <- '02111222'
+grep('\\d{6,10}', a) # match 6 to 10 numerics
+
+a <- '9487'
+grep('\\d{1,}', a) # match 1 to Inf numerics
+grep('\\d+', a) # + =? {1,}
+
+grep('\\d{0,}', a) # match 0 to Inf numerics
+grep('\\d*', a) # * =? {0,}
+
+
+cell <- c('0912345678', 
+          '0912-345678', 
+          '0912-345-678', 
+          '09123456789999999')
+
+grep('\\d{10}', cell)
+grep('\\d{4}-{0,1}\\d{3}-{0,1}\\d{3}', cell)
+grep('\\d{4}-?\\d{3}-?\\d{3}', cell) # ? => {0,1}
+grep('^09\\d{2}-?\\d{3}-?\\d{3}$', cell) # ^ match begin, $ match end
+
+
+## match clicked
+grep('.{2}\\(\\d+\\)', applenews[1,'clicked'])
+
+
+a <- 'aaa@bbb@ccc'
+gsub('(\\w+)@(\\w+)@\\w+', '\\2', a)
+
+gsub('.{2}\\((\\d+)\\)', '\\1',applenews[1,'clicked'])
+applenews[1,'clicked'] %>% gsub('.{2}\\((\\d+)\\)', '\\1', .)
+
+
+
+
+
+
+
+
+
+
+
 
 
 

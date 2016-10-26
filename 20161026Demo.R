@@ -263,16 +263,89 @@ applenews[1,'clicked'] %>% gsub('.{2}\\((\\d+)\\)', '\\1', .)
 
 
 
+## Clean Data
+applenews$view_cnt <- applenews$clicked %>%
+     gsub('.{2}\\((\\d+)\\)', '\\1', .) %>%
+     as.numeric()
 
 
+contentclean <- function(article){
+  article %>% 
+  strsplit('googletag') %>%
+  .[[1]] %>%
+  .[1] %>%
+  trimws() %>%
+  strsplit('[\n\r ]+') %>%
+  .[[1]] %>%
+  paste(collapse='')
+}
+
+applenews$clean_content <- 
+  sapply(applenews$article, contentclean)
 
 
+## Convert string to datetime
+ds <-c("August 18, 2014 12:00")
+x <-strptime(ds, "%B %d, %Y %H:%M")
+x
+
+b <- '2014-08-15'
+x1 <- as.POSIXlt(as.Date(b))
+x - x1
+as.numeric(x - x1)
 
 
+class(applenews[1, 'dt'])
+strptime( applenews[1, 'dt'], '%Y年%m月%d日%H:%M')
+
+applenews$dt1 <-
+  strptime(applenews$dt, "%Y年%m月%d日%H:%M")
+str(applenews)
 
 
+## 取得分頁資訊
+
+### get news for one page
+applenews <- getUrl(newsurl)
+
+### use for loop to get page of three pages
+appledf <- data.frame()
+for (i in 1:3){
+  appleurl <- 'http://www.appledaily.com.tw/realtimenews/section/new/'
+  df <- getUrl(paste0(appleurl,i))
+  appledf <- rbind(appledf, df)
+}
 
 
+### use lapply to get page of three pages
+apple_dfs <- lapply(1:10, function(i){
+  appleurl <- 'http://www.appledaily.com.tw/realtimenews/section/new/'
+  df <- getUrl(paste0(appleurl,i))
+  df
+})
 
+applenews <- do.call('rbind', apple_dfs)
 
+###  Convert Time
+applenews$dt <-
+  strptime(applenews$dt, "%Y年%m月%d日%H:%M")
 
+###  Convert view_cnt from string to numeric
+applenews$view_cnt <- applenews$clicked %>%
+     gsub('.{2}\\((\\d+)\\)', '\\1', .) %>%
+     as.numeric()
+
+### clean main article
+contentclean <- function(article){
+  article %>% 
+  strsplit('googletag') %>%
+  .[[1]] %>%
+  .[1] %>%
+  trimws() %>%
+  strsplit('[\n\r ]+') %>%
+  .[[1]] %>%
+  paste(collapse='')
+}
+
+applenews$content <- 
+  sapply(applenews$article, contentclean)

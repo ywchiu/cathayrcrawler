@@ -89,3 +89,73 @@ dfall2 <- lapply(1:10, function(i){
   })
 dfs <- do.call('rbind', dfall2)
 
+
+# Apple News Retrieval
+# 建立函式
+getArticle <- function(url, category){
+  
+  detail <- read_html(url) 
+  
+  # 取得內文
+  article <- detail   %>% 
+    html_nodes('.trans') %>%
+    html_text()
+  
+  # 取得標題
+  title <- detail   %>% 
+    html_nodes('#h1') %>%
+    html_text()
+  
+  # 取得時間
+  dt <- detail %>%
+    html_nodes('.gggs time') %>%
+    html_text()
+  
+  # 取得人氣
+  clicked <- detail %>%
+    html_nodes('.clicked') %>%
+    html_text()
+  
+  data.frame(title = title, article = article, category = category, dt = dt, clicked = clicked, stringsAsFactors = FALSE)
+}
+
+# 取得頁面函式
+newsurl <- 'http://www.appledaily.com.tw/realtimenews/section/new/'
+domain  <- 'http://www.appledaily.com.tw'
+
+getUrl <- function(newsurl){
+  rtddt <- read_html(newsurl) %>%
+    html_nodes('.rtddt a')
+  
+  dfall <- data.frame()
+  for (ele in rtddt){
+    url       <- ele %>% html_attr('href') 
+    #print(url)
+    if (str_count(url, domain) == 0) {
+      url       <- paste(domain, url , sep='')
+      category  <- ele %>% html_nodes('h2') %>% html_text()   
+      df        <- getArticle(url, category)
+      dfall     <- rbind(dfall, df)
+    }
+
+  }
+  dfall
+}
+
+applenews <- getUrl(newsurl)
+
+
+## Use strsplit to segment words
+strsplit(applenews[1,'article'], 'googletag')[[1]][1]
+
+## use magrittr
+applenews[1,'article'] %>% 
+  strsplit('googletag') %>%
+  .[[1]] %>%
+  .[1] %>%
+  trimws()
+
+
+
+
+

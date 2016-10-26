@@ -349,3 +349,82 @@ contentclean <- function(article){
 
 applenews$content <- 
   sapply(applenews$article, contentclean)
+
+
+
+### rbind
+a <- c(1,2,3)
+b <- c(2,3,4)
+rbind(a,b)
+cbind(a,b)
+
+
+a.frame <-data.frame(x=c(1,2,3), b =c(2,3,4))
+b.frame <-data.frame(x=c(3,3,2), b =c(1,2,3))
+c.frame <-data.frame(x=c(3,3,2), b =c(1,2,3))
+
+rbind(a.frame, b.frame, c.frame)
+cbind(a.frame, b.frame, c.frame)
+
+li <- list(a.frame, b.frame, c.frame)
+do.call('rbind', li) #　rbind(a.frame, b.frame, c.frame)
+do.call('cbind', li) #  cbind(a.frame, b.frame, c.frame)
+
+
+## Save Applenews
+save(x=applenews, file='applenews.RData')
+write.csv(x=applenews, file='applenews.csv')
+
+# Connect to Database
+library(RSQLite)
+
+con <-dbConnect(SQLite(), 'test.sqlite')
+data(iris)
+dbWriteTable(con, 'iris', iris)
+dbListTables(con)
+dbDisconnect(con)
+
+### SendQuery
+con <-dbConnect(SQLite(), 'test.sqlite')
+dbListTables(con)
+rs  <-dbSendQuery(con, 'SELECT * FROM iris')
+d1  <-fetch(rs, n =10)
+dbHasCompleted(rs)
+#?dbHasCompleted
+d2  <-fetch(rs, n =3)
+d3  <-fetch(rs, n =-1)
+dbHasCompleted(rs)
+dbClearResult(rs)
+dbDisconnect(con)
+
+### GetQuery
+con <-dbConnect(SQLite(), 'test.sqlite')
+res <-dbGetQuery(con, 
+      "SELECT Species, COUNT(*) 
+         FROM iris 
+     GROUP BY Species")
+dbDisconnect(con)
+
+### Write applenews into sqlite
+applenews$dt <- as.POSIXct(applenews$dt)
+con <-dbConnect(SQLite(), 'apple2.sqlite')
+dbWriteTable(con, 'applenews', applenews)
+dbListTables(con)
+dbDisconnect(con)
+
+
+con <-dbConnect(SQLite(), 'apple2.sqlite')
+res <- dbGetQuery(con, 
+        'SELECT category, AVG(view_cnt)
+           FROM applenews
+       GROUP BY category
+       ORDER BY AVG(view_cnt) DESC')
+View(res)
+
+
+res2 <- dbGetQuery(con, 
+        'SELECT title, view_cnt
+           FROM applenews
+       ORDER BY view_cnt DESC')
+View(res2)
+dbDisconnect(con)
